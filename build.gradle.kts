@@ -6,8 +6,8 @@ plugins {
     id("org.openjfx.javafxplugin") version "0.1.0"
 
     // 🔥 SHADOW (fat jar)
-    //id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.gradleup.shadow") version "8.3.5"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    //id("com.gradleup.shadow") version "8.3.5"
 }
 
 group = "megalodonte"
@@ -48,15 +48,20 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.10.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.10.0")
 
+    implementation("megalodonte:megalodonte-base:1.0.0-beta")
+    implementation("megalodonte:megalodonte-components:1.0.0-beta")
+    implementation("megalodonte:megalodonte-reactivity:1.0.0-beta")
+    implementation("megalodonte:megalodonte-router:1.0.0-beta")
+    implementation("megalodonte:megalodonte-theme:1.0.0-beta")
+
     implementation("megalodonte:simple-clipboard:1.0.0")
-    implementation("megalodonte:components:1.0.0")
-    implementation("megalodonte:reactivity:1.0.0")
-    implementation("megalodonte:props:1.0.0")
-    implementation("megalodonte:megalodonte-hot-preview:1.0.0")
     //implementation("megalodonte:megalodonte-previewer-components:1.0.0")
 
     // Apache Commons Net for FTP
     implementation("commons-net:commons-net:3.9.0")
+
+    // Apache FtpServer: implementação completa do protocolo FTP
+    implementation("org.apache.ftpserver:ftpserver-core:1.2.0")
 
     // Dependências JavaFX removidas (agora gerenciadas pelo bloco 'javafx { ... }')
 }

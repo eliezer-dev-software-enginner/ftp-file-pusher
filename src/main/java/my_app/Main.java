@@ -1,64 +1,25 @@
 package my_app;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import my_app.hotreload.CoesionApp;
+import megalodonte.ListenerManager;
+import megalodonte.application.Context;
+import megalodonte.application.MegalodonteApp;
 import my_app.hotreload.HotReload;
 
-import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
-@CoesionApp
-public class Main extends Application {
-    public static Stage stage;
-    HotReload hotReload;
-    boolean devMode = false;
-    static void main(String[] args) {
-        launch(args);
-    }
+public class Main {
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        stage = primaryStage;
+    static void main() {
+        MegalodonteApp.run(context -> {
+            final var stage = context.javafxStage();
+            stage.setTitle("Ftp file pusher");
 
-        initializeScene(primaryStage);
+            context.useView(new HomeScreen().render());
 
-        Set<String> exclusions = new HashSet<String>();
-        exclusions.add("my_app.hotreload.CoesionApp");
-        exclusions.add("my_app.hotreload.Reloader");
-
-        if(devMode){
-            this.hotReload = new HotReload(
-                    "src/main/java/my_app",
-                    "build/classes/java/main",
-                    "build/resources/main",
-                    "my_app.hotreload.UIReloaderImpl",
-                    primaryStage,
-                    exclusions
-            );
-            this.hotReload.start();
-        }
-
-        stage.show();
-    }
-
-    public static void initializeScene(Stage stage) throws Exception {
-        stage.setTitle("Adb file pusher");
-        stage.setResizable(false);
-
-        final String[] images = {"/logo_32x32.png", "/logo_256x256.png"};
-
-        for (String image : images) {
-            stage.getIcons().add(new Image(Objects.requireNonNull(Main.class.getResourceAsStream(image))));
-        }
-
-        final var root = new VBox(new UI().render().getNode());
-
-        stage.setScene(new Scene(root, 800, 650));
-        System.out.println("[App] Scene re-initialized.");
+            MegalodonteApp.onShutdown(() -> {
+                System.out.println("Clicked on X - close application");
+                ListenerManager.disposeAll();
+            });
+        });
     }
 }

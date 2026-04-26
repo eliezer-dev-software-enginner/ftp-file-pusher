@@ -1,1 +1,1 @@
-rootProject.name = "adb-file-pusher"
+rootProject.name = "ftp-file-pusher"
