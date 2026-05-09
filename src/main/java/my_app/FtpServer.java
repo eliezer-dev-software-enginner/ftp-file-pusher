@@ -97,7 +97,6 @@ public class FtpServer {
 
         System.out.println("[OK] Servidor FTP rodando na porta " + DEFAULT_PORT);
         System.out.println("[OK] Arquivos recebidos serão salvos em: " + pastaArquivos.getAbsolutePath());
-        System.out.println("[  ] Pressione Ctrl+C para encerrar.");
 
         // ── 6. Mantém o processo vivo e trata desligamento gracioso ───────────
         Runtime.getRuntime().addShutdownHook(new Thread(this::stopServer));
