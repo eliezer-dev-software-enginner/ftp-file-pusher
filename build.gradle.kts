@@ -54,9 +54,6 @@ dependencies {
     implementation("megalodonte:megalodonte-router:1.0.0-beta")
     implementation("megalodonte:megalodonte-theme:1.0.0-beta")
 
-    implementation("megalodonte:simple-clipboard:1.0.0")
-    //implementation("megalodonte:megalodonte-previewer-components:1.0.0")
-
     // Apache Commons Net for FTP
     implementation("commons-net:commons-net:3.9.0")
 
