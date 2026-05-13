@@ -33,6 +33,15 @@ public class HomeScreen implements ScreenComponent {
 
     ListState<File> filesReceived = ListState.ofEmpty();
 
+    State<Boolean> sending = State.of(false);
+    State<String> sendStatus = State.of(null);
+
+    // States do formulário (precisam ser acessíveis aqui também)
+    State<String> ftpServerHost = new State<>("192.168.3.104");
+    State<String> ftpPort       = new State<>("2221");
+    State<String> ftpUsername   = new State<>("android");
+    State<String> ftpPassword   = new State<>("android");
+
     @Override
     public Component render() {
         ForEachState<File, Text> forEachState = ForEachState.of(
@@ -40,6 +49,7 @@ public class HomeScreen implements ScreenComponent {
                 it -> new Text(it.getName())
         );
 
+        
         return new Container(new ContainerProps().paddingAll(20))
                 .children(
                         new Row(new RowProps().spacingOf(10)).children(
@@ -48,15 +58,56 @@ public class HomeScreen implements ScreenComponent {
                         ),
                         Show.when(hasError, ()-> new Text(errorText)),
                         new SpacerVertical(10),
-                        Show.when(runningFtpServer, ()->
-                            new Column().children(
-                                    Components.form(),
-                                    new SpacerVertical(10),
-                                    Components.dragFileUi(filesReceived)
-                                    )
+                        Show.when(runningFtpServer, () ->
+                                new Column().children(
+                                        Components.form(formState),
+                                        new SpacerVertical(10),
+                                        Components.dragFileUi(filesReceived),
+                                        new SpacerVertical(10),
+                                        new Button("Enviar arquivos").onClick(this::handleSendFiles),
+                                        Show.when(sending, () -> new Text("Enviando...")),
+                                        Show.when(sendStatus, s -> s != null, () -> new Text(sendStatus))
+                                )
                         ),
                         new Column(new ColumnProps().centerHorizontally()).items(forEachState)
                 );
+    }
+
+    void handleSendFiles() {
+        if (filesReceived.get().isEmpty()) {
+            hasError.set(true);
+            errorText.set("Nenhum arquivo selecionado.");
+            return;
+        }
+
+        sending.set(true);
+        hasError.set(false);
+        sendStatus.set(null);
+
+        // FTP é bloqueante — roda em background thread
+        Thread.ofVirtual().start(() -> {
+            try {
+                var config = new FtpClient.FtpConfig(
+                        ftpServerHost.get(),
+                        Integer.parseInt(ftpPort.get()),
+                        ftpUsername.get(),
+                        ftpPassword.get()
+                );
+                FtpClient.sendFiles(config, filesReceived.get());
+
+                javafx.application.Platform.runLater(() -> {
+                    sendStatus.set("Arquivos enviados com sucesso!");
+                    sending.set(false);
+                });
+
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    hasError.set(true);
+                    errorText.set("Erro ao enviar: " + e.getMessage());
+                    sending.set(false);
+                });
+            }
+        });
     }
 
     void handleRunAsFtpClient() {

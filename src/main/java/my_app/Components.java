@@ -20,22 +20,17 @@ import java.util.List;
 
 public class Components {
 
-    public static Component form(){
-        State<String> ftpServer = new State<>("192.168.3.104");
-        State<String> ftpPort = new State<>("2221");
-        State<String> ftpUsername = new State<>("android");
-        State<String> ftpPassword = new State<>("android");
-
+    public static Component form(FtpFormState state) {
         return new Column(new ColumnProps().spacingOf(10))
-                                .c_child(new Text("FTP Configuration", new TextProps().fontSize(17)))
-                                .c_child(new Row(new RowProps().spacingOf(10))
-                                        .children(
-                                                InputColumn("Server", ftpServer),
-                                                InputColumn("Port", ftpPort),
-                                                InputColumn("Username", ftpUsername),
-                                                InputColumn("Password", ftpPassword)
-                                        )
-                                );
+                .c_child(new Text("FTP Configuration", new TextProps().fontSize(17)))
+                .c_child(new Row(new RowProps().spacingOf(10))
+                        .children(
+                                InputColumn("Server",   state.host()),
+                                InputColumn("Port",     state.port()),
+                                InputColumn("Username", state.username()),
+                                InputColumn("Password", state.password())
+                        )
+                );
     }
 
     private static Column InputColumn(String label, State<String> inputState) {
